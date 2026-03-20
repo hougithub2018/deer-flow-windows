@@ -1,10 +1,13 @@
-# 🦌 DeerFlow - 2.0
+# 🦌 DeerFlow - 2.0 (Windows Native)
+
+> **This is a Windows-native fork** of [bytedance/deer-flow](https://github.com/bytedance/deer-flow). It adds native Windows 10/11 support — no Docker, no nginx required. See [Windows Deploy Guide](./docs/WINDOWS_DEPLOY.md) for details.
 
 English | [中文](./README_zh.md)
 
 [![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](./backend/pyproject.toml)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)](./Makefile)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows&logoColor=white)](./docs/WINDOWS_DEPLOY.md)
 
 <a href="https://trendshift.io/repositories/14699" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14699" alt="bytedance%2Fdeer-flow | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 > On February 28th, 2026, DeerFlow claimed the 🏆 #1 spot on GitHub Trending following the launch of version 2. Thanks a million to our incredible community — you made this happen! 💪🔥
