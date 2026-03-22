@@ -18,8 +18,7 @@
   - [3.1 已启用](#31-已启用)
   - [3.2 未启用（可选）](#32-未启用可选)
 - [四、Agent 技能（Skills）](#四agent-技能skills)
-- [五、WorkBuddy 技能（开发辅助）](#五workbuddy-技能开发辅助)
-- [六、工具统计总览](#六工具统计总览)
+- [五、工具统计总览](#五工具统计总览)
 
 ---
 
@@ -228,22 +227,7 @@ Skills 是 Agent 工作流模板，通过 `SKILL.md` 定义行为指令。存放
 
 ---
 
-## 五、WorkBuddy 技能（开发辅助）
-
-以下技能安装于 WorkBuddy 客户端，在开发过程中为用户提供辅助能力（非 DeerFlow Agent 使用）。
-
-| 技能 | 来源 | 功能 |
-|------|------|------|
-| **docx** | 内置 plugin | Word 文档创建、编辑、读取 |
-| **xlsx** | 内置 plugin | Excel 表格创建、编辑、数据分析 |
-| **pptx** | 内置 plugin | PowerPoint 演示文稿创建和编辑 |
-| **pdf** | 内置 plugin | PDF 读取、合并、拆分、水印等 |
-| **image-enhancer** | 内置 plugin | 图像增强处理 |
-| **mermaid-diagrams** | 用户级技能 | Mermaid 图表生成（Markdown 嵌入） |
-
----
-
-## 六、工具统计总览
+## 五、工具统计总览
 
 | 类别 | 数量 |
 |------|------|
