@@ -26,6 +26,9 @@ config.yaml
 mcp_config.json
 extensions_config.json
 
+# MCP servers (third-party, clone separately)
+backend/mcp-servers/
+
 # IDE
 .idea/
 .vscode/

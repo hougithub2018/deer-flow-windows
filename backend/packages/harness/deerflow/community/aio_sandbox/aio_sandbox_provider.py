@@ -11,14 +11,40 @@ The provider itself handles:
 """
 
 import atexit
-import fcntl
 import hashlib
 import logging
 import os
+import platform
 import signal
 import threading
 import time
 import uuid
+
+# Cross-platform file locking: fcntl on Unix, msvcrt on Windows
+if platform.system() == "Windows":
+    import msvcrt
+
+    def _lock_file(f):
+        """Acquire an exclusive lock on a file (Windows)."""
+        msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+
+    def _unlock_file(f):
+        """Release a file lock (Windows)."""
+        try:
+            f.seek(0)
+            msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+        except OSError:
+            pass
+else:
+    import fcntl
+
+    def _lock_file(f):
+        """Acquire an exclusive lock on a file (Unix)."""
+        fcntl.flock(f, fcntl.LOCK_EX)
+
+    def _unlock_file(f):
+        """Release a file lock (Unix)."""
+        fcntl.flock(f, fcntl.LOCK_UN)
 
 from deerflow.config import get_app_config
 from deerflow.config.paths import VIRTUAL_PATH_PREFIX, Paths, get_paths
@@ -295,12 +321,11 @@ class AioSandboxProvider(SandboxProvider):
 
     def _register_signal_handlers(self) -> None:
         """Register signal handlers for graceful shutdown."""
-        self._original_sigterm = signal.getsignal(signal.SIGTERM)
         self._original_sigint = signal.getsignal(signal.SIGINT)
 
         def signal_handler(signum, frame):
             self.shutdown()
-            original = self._original_sigterm if signum == signal.SIGTERM else self._original_sigint
+            original = self._original_sigint
             if callable(original):
                 original(signum, frame)
             elif original == signal.SIG_DFL:
@@ -308,10 +333,27 @@ class AioSandboxProvider(SandboxProvider):
                 signal.raise_signal(signum)
 
         try:
-            signal.signal(signal.SIGTERM, signal_handler)
             signal.signal(signal.SIGINT, signal_handler)
         except ValueError:
             logger.debug("Could not register signal handlers (not main thread)")
+
+        # SIGTERM is not supported on Windows; register it only on Unix
+        if platform.system() != "Windows":
+            self._original_sigterm = signal.getsignal(signal.SIGTERM)
+
+            def _sigterm_handler(signum, frame):
+                self.shutdown()
+                original = self._original_sigterm
+                if callable(original):
+                    original(signum, frame)
+                elif original == signal.SIG_DFL:
+                    signal.signal(signum, signal.SIG_DFL)
+                    signal.raise_signal(signum)
+
+            try:
+                signal.signal(signal.SIGTERM, _sigterm_handler)
+            except ValueError:
+                logger.debug("Could not register SIGTERM handler (not main thread)")
 
     # ── Thread locking (in-process) ──────────────────────────────────────
 
@@ -403,7 +445,7 @@ class AioSandboxProvider(SandboxProvider):
 
         with open(lock_path, "a", encoding="utf-8") as lock_file:
             try:
-                fcntl.flock(lock_file, fcntl.LOCK_EX)
+                _lock_file(lock_file)
                 # Re-check in-process caches under the file lock in case another
                 # thread in this process won the race while we were waiting.
                 with self._lock:
@@ -437,7 +479,7 @@ class AioSandboxProvider(SandboxProvider):
 
                 return self._create_sandbox(thread_id, sandbox_id)
             finally:
-                fcntl.flock(lock_file, fcntl.LOCK_UN)
+                _unlock_file(lock_file)
 
     def _evict_oldest_warm(self) -> str | None:
         """Destroy the oldest container in the warm pool to free capacity.

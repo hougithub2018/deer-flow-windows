@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import subprocess
 
@@ -21,9 +22,13 @@ class LocalSandbox(Sandbox):
         """Detect available shell executable with fallback.
 
         Returns the first available shell in order of preference:
-        /bin/zsh → /bin/bash → /bin/sh → first `sh` found on PATH.
+        - Windows: cmd.exe (via COMSPEC env var)
+        - Unix: /bin/zsh → /bin/bash → /bin/sh → first `sh` found on PATH.
         Raises a RuntimeError if no suitable shell is found.
         """
+        if platform.system() == "Windows":
+            return os.environ.get("COMSPEC", r"C:\Windows\System32\cmd.exe")
+
         for shell in ("/bin/zsh", "/bin/bash", "/bin/sh"):
             if os.path.isfile(shell) and os.access(shell, os.X_OK):
                 return shell

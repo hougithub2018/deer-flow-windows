@@ -1,4 +1,5 @@
 import os
+import platform
 import re
 from pathlib import Path
 
@@ -141,11 +142,10 @@ class Paths:
     def ensure_thread_dirs(self, thread_id: str) -> None:
         """Create all standard sandbox directories for a thread.
 
-        Directories are created with mode 0o777 so that sandbox containers
+        On Unix, directories are created with mode 0o777 so that sandbox containers
         (which may run as a different UID than the host backend process) can
         write to the volume-mounted paths without "Permission denied" errors.
-        The explicit chmod() call is necessary because Path.mkdir(mode=...) is
-        subject to the process umask and may not yield the intended permissions.
+        On Windows, chmod is a no-op since Windows uses a different permission model.
         """
         for d in [
             self.sandbox_work_dir(thread_id),
@@ -153,7 +153,8 @@ class Paths:
             self.sandbox_outputs_dir(thread_id),
         ]:
             d.mkdir(parents=True, exist_ok=True)
-            d.chmod(0o777)
+            if platform.system() != "Windows":
+                d.chmod(0o777)
 
     def resolve_virtual_path(self, thread_id: str, virtual_path: str) -> Path:
         """Resolve a sandbox virtual path to the actual host filesystem path.

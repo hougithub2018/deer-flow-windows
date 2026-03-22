@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "filesystem": {
-      "enabled": false,
+      "enabled": true,
       "type": "stdio",
       "command": "npx",
       "args": [
@@ -11,6 +11,34 @@
       ],
       "env": {},
       "description": "Provides filesystem access within allowed directories"
+    },
+    "office-suite": {
+      "enabled": true,
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "python",
+        "backend/mcp-servers/office-mcp/src/office_mcp_server/main.py"
+      ],
+      "env": {
+        "PYTHONPATH": "backend/mcp-servers/office-mcp/src",
+        "OUTPUT_DIR": "output"
+      },
+      "description": "Office document generation: Word (docx), Excel (xlsx), PowerPoint (pptx), PDF. Requires: pip install fastmcp python-docx openpyxl python-pptx reportlab scipy scikit-learn pandas numpy"
+    },
+    "mermaid": {
+      "enabled": true,
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "mcp-mermaid"
+      ],
+      "env": {},
+      "description": "Generate Mermaid diagrams as SVG/PNG images (flowcharts, sequence diagrams, ER diagrams, etc.)"
     },
     "github": {
       "enabled": false,

@@ -41,7 +41,23 @@ export function SubtaskCard({
   const { t } = useI18n();
   const [collapsed, setCollapsed] = useState(true);
   const rehypePlugins = useRehypeSplitWordsIntoSpans(isLoading);
-  const task = useSubtask(taskId)!;
+  const task = useSubtask(taskId);
+
+  // Task data may not be available yet during initial render / history restore.
+  // Render a placeholder instead of crashing.
+  if (!task) {
+    return (
+      <div className={cn("w-full", className)}>
+        <ChainOfThought className="w-full gap-2 rounded-lg border py-0">
+          <div className="bg-background/95 flex w-full items-center gap-2 rounded-lg px-4 py-2">
+            <Loader2Icon className="size-3 animate-spin text-muted-foreground" />
+            <span className="text-muted-foreground text-sm">{t.subtasks.in_progress}</span>
+          </div>
+        </ChainOfThought>
+      </div>
+    );
+  }
+
   const icon = useMemo(() => {
     if (task.status === "completed") {
       return <CheckCircleIcon className="size-3" />;

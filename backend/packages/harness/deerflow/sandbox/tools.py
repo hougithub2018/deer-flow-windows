@@ -15,13 +15,22 @@ from deerflow.sandbox.sandbox import Sandbox
 from deerflow.sandbox.sandbox_provider import get_sandbox_provider
 
 _ABSOLUTE_PATH_PATTERN = re.compile(r"(?<![:\w])/(?:[^\s\"'`;&|<>()]+)")
-_LOCAL_BASH_SYSTEM_PATH_PREFIXES = (
+_LOCAL_BASH_SYSTEM_PATH_PREFIXES_UNIX = (
     "/bin/",
     "/usr/bin/",
     "/usr/sbin/",
     "/sbin/",
     "/opt/homebrew/bin/",
     "/dev/",
+)
+_LOCAL_BASH_SYSTEM_PATH_PREFIXES_WINDOWS = (
+    "C:\\Windows\\System32\\",
+    "C:\\Windows\\SysWOW64\\",
+    "C:\\Windows\\",
+)
+_LOCAL_BASH_SYSTEM_PATH_PREFIXES = (
+    _LOCAL_BASH_SYSTEM_PATH_PREFIXES_UNIX
+    + _LOCAL_BASH_SYSTEM_PATH_PREFIXES_WINDOWS
 )
 
 _DEFAULT_SKILLS_CONTAINER_PATH = "/mnt/skills"
